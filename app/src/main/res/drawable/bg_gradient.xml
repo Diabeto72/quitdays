@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Deep-space diagonal gradient used as splash background -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <gradient
+        android:type="linear"
+        android:angle="315"
+        android:startColor="#0A0E1A"
+        android:centerColor="#10172B"
+        android:endColor="#1A1040" />
+</shape>

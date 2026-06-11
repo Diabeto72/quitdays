@@ -3,14 +3,24 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
-    <color name="primary">#43A047</color>
-    <color name="primary_dark">#2E7D32</color>
-    <color name="secondary">#FB8C00</color>
-    <color name="background">#F5F6F8</color>
-    <color name="card_background">#FFFFFF</color>
-    <color name="clean_green">#4CAF50</color>
-    <color name="break_red">#F44336</color>
-    <color name="dot_gray">#BDBDBD</color>
-    <color name="outline">#E0E0E0</color>
-    <color name="text_secondary">#757575</color>
+    <!-- Futuristic dark palette -->
+    <color name="primary">#00E5FF</color>          <!-- neon cyan -->
+    <color name="primary_dark">#0A0E1A</color>     <!-- deep space (status bar) -->
+    <color name="accent_purple">#7C4DFF</color>    <!-- electric purple -->
+    <color name="secondary">#FFC400</color>        <!-- neon amber (money) -->
+
+    <color name="background">#0A0E1A</color>       <!-- deep navy-black -->
+    <color name="card_background">#141B2D</color>  <!-- dark surface -->
+    <color name="outline">#243049</color>          <!-- subtle border -->
+
+    <color name="clean_green">#00E676</color>      <!-- neon mint -->
+    <color name="break_red">#FF5370</color>        <!-- soft neon red -->
+    <color name="dot_gray">#3A4358</color>
+
+    <color name="text_primary">#E8ECF4</color>
+    <color name="text_secondary">#8A93A8</color>
+
+    <!-- Streak circle gradient -->
+    <color name="streak_start">#00B8D4</color>
+    <color name="streak_end">#651FFF</color>
 </resources>

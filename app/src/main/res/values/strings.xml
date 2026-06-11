@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">QuitDays</string>
+    <string name="splash_tagline">המסע שלך לחיים נקיים</string>
 
     <!-- Navigation -->
     <string name="nav_habits">הרגלים</string>

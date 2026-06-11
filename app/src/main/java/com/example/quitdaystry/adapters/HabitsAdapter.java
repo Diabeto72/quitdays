@@ -1,6 +1,7 @@
 package com.example.quitdaystry.adapters;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,6 +48,14 @@ public class HabitsAdapter extends RecyclerView.Adapter<HabitsAdapter.ViewHolder
         holder.tvCategory.setText(hwl.habit.getCategory() != null ? hwl.habit.getCategory().name() : "");
         holder.tvStreak.setText(holder.itemView.getContext().getString(R.string.streak_days_fmt, streak));
 
+        // Tint the accent strip with the habit's chosen color
+        try {
+            holder.vColorStrip.setBackgroundColor(Color.parseColor(hwl.habit.getColorHex()));
+        } catch (Exception e) {
+            holder.vColorStrip.setBackgroundColor(
+                    holder.itemView.getContext().getColor(R.color.primary));
+        }
+
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(v.getContext(), HabitDetailActivity.class);
             intent.putExtra(HabitDetailActivity.EXTRA_HABIT_ID, hwl.habit.getId());
@@ -59,12 +68,14 @@ public class HabitsAdapter extends RecyclerView.Adapter<HabitsAdapter.ViewHolder
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         TextView tvName, tvCategory, tvStreak;
+        View vColorStrip;
 
         ViewHolder(View v) {
             super(v);
-            tvName     = v.findViewById(R.id.tv_habit_name);
-            tvCategory = v.findViewById(R.id.tv_habit_category);
-            tvStreak   = v.findViewById(R.id.tv_habit_streak);
+            tvName      = v.findViewById(R.id.tv_habit_name);
+            tvCategory  = v.findViewById(R.id.tv_habit_category);
+            tvStreak    = v.findViewById(R.id.tv_habit_streak);
+            vColorStrip = v.findViewById(R.id.v_color_strip);
         }
     }
 }
