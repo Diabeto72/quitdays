@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
     <!-- Futuristic dark palette -->
     <color name="primary">#00E5FF</color>          <!-- neon cyan -->
-    <color name="primary_dark">#0A0E1A</color>     <!-- deep space (status bar) -->
     <color name="accent_purple">#7C4DFF</color>    <!-- electric purple -->
     <color name="secondary">#FFC400</color>        <!-- neon amber (money) -->
 
@@ -15,7 +13,6 @@
 
     <color name="clean_green">#00E676</color>      <!-- neon mint -->
     <color name="break_red">#FF5370</color>        <!-- soft neon red -->
-    <color name="dot_gray">#3A4358</color>
 
     <color name="text_primary">#E8ECF4</color>
     <color name="text_secondary">#8A93A8</color>

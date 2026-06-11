@@ -16,12 +16,9 @@
     <!-- Habit Detail -->
     <string name="i_was_clean_today">היום היה נקי ✓</string>
     <string name="i_slipped">נשברתי</string>
-    <string name="streak_label">ימי רצף</string>
     <string name="streak_days_fmt">%d ימים</string>
     <string name="clean_days_fmt">%d ימים נקיים</string>
     <string name="longest_streak_fmt">%d ימים (שיא)</string>
-    <string name="money_saved_label">חסכתי</string>
-    <string name="craving_fmt">תשוקה: %s</string>
 
     <!-- Add / Edit Habit -->
     <string name="habit_name">שם ההרגל</string>
@@ -52,12 +49,6 @@
     <string name="delete_all_data">מחק את כל הנתונים</string>
     <string name="delete_all_confirm">פעולה זו תמחק את כל ההרגלים והלוגים לצמיתות. אין דרך חזרה!</string>
     <string name="export_backup">ייצא גיבוי</string>
-
-    <!-- Stats -->
-    <string name="stats_coming_soon">סטטיסטיקות בקרוב</string>
-
-    <!-- Quick mark -->
-    <string name="quick_mark">✓ סמן יום</string>
 
     <!-- Category display names -->
     <string-array name="habit_categories">
