@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(./gradlew assembleDebug *)",
+      "Read(//c/Program Files/Android//**)",
+      "Read(//c/Users/Cyber_User/.gradle/jdks//**)",
+      "Read(//c/Program Files//**)",
+      "Bash(Get-ChildItem -Recurse -Filter \"*.kt\" \"C:\\\\Users\\\\Cyber_User\\\\AndroidStudioProjects\\\\QuitDaysTry\\\\app\\\\src\")",
+      "Bash(Select-Object FullName)",
+      "PowerShell(Get-ChildItem -Recurse \"C:\\\\Users\\\\Cyber_User\\\\AndroidStudioProjects\\\\QuitDaysTry\\\\app\\\\src\" | Where-Object { $_.Extension -eq \".kt\" } | ForEach-Object { $_.FullName })",
+      "PowerShell(Get-ChildItem -Recurse \"C:\\\\Users\\\\Cyber_User\\\\AndroidStudioProjects\\\\QuitDaysTry\\\\app\\\\src\\\\main\" | Where-Object { !$_.PSIsContainer } | Select-Object -ExpandProperty FullName)",
+      "Bash(adb devices *)"
+    ]
+  }
+}

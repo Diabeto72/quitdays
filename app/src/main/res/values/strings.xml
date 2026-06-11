@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">QuitDays</string>
+
+    <!-- Navigation -->
+    <string name="nav_habits">הרגלים</string>
+    <string name="nav_stats">סטטיסטיקות</string>
+    <string name="nav_settings">הגדרות</string>
+
+    <!-- Habits list -->
+    <string name="add_habit">הוסף הרגל</string>
+    <string name="empty_habits_title">עוד אין הרגלים</string>
+    <string name="empty_habits_subtitle">לחץ על + כדי להוסיף הרגל ראשון</string>
+
+    <!-- Habit Detail -->
+    <string name="i_was_clean_today">היום היה נקי ✓</string>
+    <string name="i_slipped">נשברתי</string>
+    <string name="streak_label">ימי רצף</string>
+    <string name="streak_days_fmt">%d ימים</string>
+    <string name="clean_days_fmt">%d ימים נקיים</string>
+    <string name="longest_streak_fmt">%d ימים (שיא)</string>
+    <string name="money_saved_label">חסכתי</string>
+    <string name="craving_fmt">תשוקה: %s</string>
+
+    <!-- Add / Edit Habit -->
+    <string name="habit_name">שם ההרגל</string>
+    <string name="category">קטגוריה</string>
+    <string name="daily_cost">עלות יומית</string>
+    <string name="motivation_note">הערת מוטיבציה</string>
+    <string name="pick_quit_date">בחר תאריך גמילה</string>
+    <string name="choose_color">בחר צבע</string>
+    <string name="save">שמור</string>
+    <string name="cancel">ביטול</string>
+
+    <!-- Dialog -->
+    <string name="craving_level">דרגת תשוקה (0–10)</string>
+    <string name="notes_optional">הערות (אופציונלי)</string>
+    <string name="notes_required">הערות (חובה)</string>
+    <string name="trigger_optional">מה גרם לנפילה? (אופציונלי)</string>
+    <string name="error_break_note_required">הערה היא שדה חובה</string>
+
+    <!-- Overflow menu -->
+    <string name="edit">ערוך</string>
+    <string name="delete">מחק</string>
+    <string name="archive">ארכיון</string>
+    <string name="delete_habit">מחק הרגל</string>
+    <string name="delete_habit_confirm">האם אתה בטוח שברצונך למחוק את ההרגל הזה לצמיתות?</string>
+
+    <!-- Settings -->
+    <string name="settings_reminder">תזכורת יומית</string>
+    <string name="delete_all_data">מחק את כל הנתונים</string>
+    <string name="delete_all_confirm">פעולה זו תמחק את כל ההרגלים והלוגים לצמיתות. אין דרך חזרה!</string>
+    <string name="export_backup">ייצא גיבוי</string>
+
+    <!-- Stats -->
+    <string name="stats_coming_soon">סטטיסטיקות בקרוב</string>
+
+    <!-- Quick mark -->
+    <string name="quick_mark">✓ סמן יום</string>
+
+    <!-- Category display names -->
+    <string-array name="habit_categories">
+        <item>עישון</item>
+        <item>אלכוהול</item>
+        <item>סוכר</item>
+        <item>רשתות חברתיות</item>
+        <item>הימורים</item>
+        <item>אחר</item>
+    </string-array>
+</resources>
