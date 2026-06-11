@@ -16,7 +16,7 @@ import com.example.quitdaystry.models.DayLog;
 import com.example.quitdaystry.models.DayLog.LogStatus;
 import com.example.quitdaystry.models.Habit.HabitWithLogs;
 import com.example.quitdaystry.utils.DateUtils;
-import com.example.quitdaystry.viewmodels.HabitsViewModel;
+import com.example.quitdaystry.viewmodels.HabitViewModel;
 
 import java.util.Collections;
 import java.util.List;
@@ -42,7 +42,7 @@ public class StatsFragment extends Fragment {
         tvMoney      = view.findViewById(R.id.tv_stat_money);
         tvBestStreak = view.findViewById(R.id.tv_stat_best_streak);
 
-        HabitsViewModel vm = new ViewModelProvider(this).get(HabitsViewModel.class);
+        HabitViewModel vm = new ViewModelProvider(this).get(HabitViewModel.class);
         vm.getActiveHabits().observe(getViewLifecycleOwner(), this::updateStats);
     }
 

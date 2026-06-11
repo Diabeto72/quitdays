@@ -38,11 +38,6 @@
             android:name=".activities.HabitDetailActivity"
             android:exported="false" />
 
-        <activity
-            android:name=".activities.EditHabitActivity"
-            android:exported="false"
-            android:windowSoftInputMode="adjustResize" />
-
         <!-- WorkManager worker for daily reminder -->
         <provider
             android:name="androidx.startup.InitializationProvider"

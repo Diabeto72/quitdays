@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.quitdaystry.R;
 import com.example.quitdaystry.activities.AddHabitActivity;
 import com.example.quitdaystry.adapters.HabitsAdapter;
-import com.example.quitdaystry.viewmodels.HabitsViewModel;
+import com.example.quitdaystry.viewmodels.HabitViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 /**
@@ -50,7 +50,7 @@ public class HabitsFragment extends Fragment {
         fab.setOnClickListener(v ->
                 startActivity(new Intent(requireContext(), AddHabitActivity.class)));
 
-        HabitsViewModel vm = new ViewModelProvider(this).get(HabitsViewModel.class);
+        HabitViewModel vm = new ViewModelProvider(this).get(HabitViewModel.class);
         vm.getActiveHabits().observe(getViewLifecycleOwner(), list -> {
             adapter.setHabits(list != null ? list : new java.util.ArrayList<>());
             emptyState.setVisibility(list == null || list.isEmpty() ? View.VISIBLE : View.GONE);

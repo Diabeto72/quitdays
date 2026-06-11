@@ -20,7 +20,7 @@ import com.example.quitdaystry.models.DayLog;
 import com.example.quitdaystry.models.Habit;
 import com.example.quitdaystry.models.Habit.HabitWithLogs;
 import com.example.quitdaystry.utils.DateUtils;
-import com.example.quitdaystry.viewmodels.HabitDetailViewModel;
+import com.example.quitdaystry.viewmodels.HabitViewModel;
 import com.google.android.material.slider.Slider;
 
 import java.time.LocalDate;
@@ -31,10 +31,10 @@ public class HabitDetailActivity extends BaseActivity {
 
     public static final String EXTRA_HABIT_ID = "extra_habit_id";
 
-    private HabitDetailViewModel viewModel;
+    private HabitViewModel viewModel;
 
     private TextView tvStreakDays, tvCleanTotal, tvLongestStreak, tvMoneySaved, tvToolbarTitle;
-    private Button btnBreak;
+    private Button btnBreak, btnClean;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,8 +54,9 @@ public class HabitDetailActivity extends BaseActivity {
         tvLongestStreak = findViewById(R.id.tv_longest_streak);
         tvMoneySaved    = findViewById(R.id.tv_money_saved);
         btnBreak        = findViewById(R.id.btn_break);
+        btnClean        = findViewById(R.id.btn_clean);
 
-        viewModel = new ViewModelProvider(this).get(HabitDetailViewModel.class);
+        viewModel = new ViewModelProvider(this).get(HabitViewModel.class);
         viewModel.setHabitId(habitId);
 
         viewModel.getHabitWithLogs().observe(this, hwl -> {
@@ -80,6 +81,25 @@ public class HabitDetailActivity extends BaseActivity {
         });
 
         btnBreak.setOnClickListener(v -> showBreakDialog());
+        btnClean.setOnClickListener(v -> showCleanDialog());
+    }
+
+    /** Dialog for logging a clean day — saves a CLEAN DayLog to the database. */
+    private void showCleanDialog() {
+        View view = LayoutInflater.from(this).inflate(R.layout.dialog_log_clean, null);
+        Slider sliderCraving = view.findViewById(R.id.slider_craving);
+        EditText etNotes     = view.findViewById(R.id.et_notes);
+
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.i_was_clean_today)
+                .setView(view)
+                .setPositiveButton(R.string.save, (d, w) -> {
+                    int craving = (int) sliderCraving.getValue();
+                    String notes = etNotes.getText() != null ? etNotes.getText().toString().trim() : null;
+                    viewModel.markClean(LocalDate.now(), craving, notes);
+                })
+                .setNegativeButton(R.string.cancel, null)
+                .show();
     }
 
     private void showBreakDialog() {
@@ -122,8 +142,8 @@ public class HabitDetailActivity extends BaseActivity {
         if (id == android.R.id.home) {
             finish(); return true;
         } else if (id == R.id.action_edit) {
-            Intent intent = new Intent(this, EditHabitActivity.class);
-            intent.putExtra(EditHabitActivity.EXTRA_HABIT_ID, viewModel.getCurrentHabitId());
+            Intent intent = new Intent(this, AddHabitActivity.class);
+            intent.putExtra(AddHabitActivity.EXTRA_HABIT_ID, viewModel.getCurrentHabitId());
             startActivity(intent);
             return true;
         } else if (id == R.id.action_delete) {

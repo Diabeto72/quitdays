@@ -26,10 +26,6 @@ public class DateUtils {
         return date.format(DISPLAY_FORMATTER);
     }
 
-    public static String toIso(LocalDate date) {
-        return date == null ? "" : date.toString();
-    }
-
     /** Current streak in days. Only an explicit BREAK log breaks the streak. */
     public static int currentStreak(Habit h, List<DayLog> logs) {
         LocalDate today = LocalDate.now();
@@ -77,9 +73,5 @@ public class DateUtils {
     public static String savedString(int cleanDays, Habit habit) {
         double saved = cleanDays * habit.getDailyCost();
         return String.format(Locale.US, "%s %.2f", habit.getCurrency(), saved);
-    }
-
-    public static double savedAmount(int cleanDays, Habit habit) {
-        return cleanDays * habit.getDailyCost();
     }
 }

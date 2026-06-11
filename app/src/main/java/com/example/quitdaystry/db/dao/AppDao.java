@@ -57,14 +57,8 @@ public interface AppDao {
     @Query("SELECT * FROM day_logs WHERE habit_id = :habitId AND log_date = :date LIMIT 1")
     DayLog getLogForDate(long habitId, String date);
 
-    @Query("SELECT MAX(log_date) FROM day_logs WHERE habit_id = :habitId AND status = 'BREAK'")
-    String getLastBreakDate(long habitId);
-
     @Query("SELECT COUNT(*) FROM day_logs WHERE habit_id = :habitId AND status = 'CLEAN'")
     LiveData<Integer> getCleanCount(long habitId);
-
-    @Query("SELECT * FROM day_logs WHERE habit_id = :habitId ORDER BY log_date DESC LIMIT :limit")
-    LiveData<List<DayLog>> getRecentLogs(long habitId, int limit);
 
     @Query("SELECT * FROM day_logs WHERE habit_id = :habitId")
     List<DayLog> getLogsForHabitSync(long habitId);

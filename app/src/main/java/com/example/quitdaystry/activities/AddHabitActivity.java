@@ -6,30 +6,40 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
 
+import androidx.lifecycle.ViewModelProvider;
+
 import com.example.quitdaystry.R;
 import com.example.quitdaystry.models.Habit;
 import com.example.quitdaystry.models.Habit.HabitCategory;
-import com.example.quitdaystry.models.HabitDraft;
 import com.example.quitdaystry.utils.ValidationUtils;
+import com.example.quitdaystry.viewmodels.HabitViewModel;
 import com.google.android.material.datepicker.CalendarConstraints;
 import com.google.android.material.datepicker.DateValidatorPointBackward;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.textfield.TextInputEditText;
-import com.google.android.material.textfield.TextInputLayout;
 
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 
+/**
+ * One screen for both adding and editing a habit.
+ * Add mode: opened without extras. Edit mode: opened with EXTRA_HABIT_ID —
+ * the form is pre-filled and saving updates instead of inserting.
+ */
 public class AddHabitActivity extends BaseActivity {
 
-    protected TextInputEditText etName, etDailyCost, etMotivation;
-    protected TextInputLayout tilName, tilDailyCost;
-    protected Spinner spinnerCategory;
-    protected Button btnPickDate;
-    protected LocalDate selectedDate = LocalDate.now();
-    protected String selectedColor = "#4CAF50";
+    public static final String EXTRA_HABIT_ID = "extra_habit_id";
+
+    private TextInputEditText etName, etDailyCost, etMotivation;
+    private Spinner spinnerCategory;
+    private Button btnPickDate;
+    private LocalDate selectedDate = LocalDate.now();
+    private String selectedColor = "#4CAF50";
+
+    private HabitViewModel viewModel;
+    private long habitId = -1;   // -1 = add mode, otherwise edit mode
 
     private final String[] COLORS = {
         "#4CAF50", "#2196F3", "#F44336", "#FF9800", "#9C27B0", "#00BCD4"
@@ -45,16 +55,19 @@ public class AddHabitActivity extends BaseActivity {
         setupDatePicker();
         setupColorPicker();
 
+        viewModel = new ViewModelProvider(this).get(HabitViewModel.class);
+
+        habitId = getIntent().getLongExtra(EXTRA_HABIT_ID, -1);
+        if (habitId != -1) loadHabitForEdit();
+
         FloatingActionButton fabSave = findViewById(R.id.fab_save);
         fabSave.setOnClickListener(v -> onSave());
     }
 
-    protected void bindViews() {
+    private void bindViews() {
         etName = findViewById(R.id.et_name);
         etDailyCost = findViewById(R.id.et_daily_cost);
         etMotivation = findViewById(R.id.et_motivation);
-        tilName = findViewById(R.id.til_name);
-        tilDailyCost = findViewById(R.id.til_daily_cost);
         spinnerCategory = findViewById(R.id.spinner_category);
         btnPickDate = findViewById(R.id.btn_pick_date);
     }
@@ -101,25 +114,63 @@ public class AddHabitActivity extends BaseActivity {
         }
     }
 
-    protected void onSave() {
-        HabitDraft draft = buildDraft();
-        ValidationUtils.ValidationResult result = ValidationUtils.validateHabit(draft);
-        if (!result.ok) { showError(result.message); return; }
-        Habit habit = draft.toHabit();
-        repo().insertHabit(habit, id -> finish());
+    /** Edit mode: fill the form once with the existing habit's values. */
+    private void loadHabitForEdit() {
+        viewModel.setHabitId(habitId);
+        viewModel.getHabitWithLogs().observe(this, hwl -> {
+            if (hwl == null) return;
+            Habit h = hwl.habit;
+            etName.setText(h.getName());
+            etDailyCost.setText(String.valueOf(h.getDailyCost()));
+            etMotivation.setText(h.getMotivationNote());
+            if (h.getQuitDate() != null) {
+                selectedDate = h.getQuitDate();
+                btnPickDate.setText(selectedDate.toString());
+            }
+            if (h.getCategory() != null) {
+                HabitCategory[] cats = HabitCategory.values();
+                for (int i = 0; i < cats.length; i++) {
+                    if (cats[i] == h.getCategory()) { spinnerCategory.setSelection(i); break; }
+                }
+            }
+            if (h.getColorHex() != null) selectedColor = h.getColorHex();
+            viewModel.getHabitWithLogs().removeObservers(this);
+        });
     }
 
-    protected HabitDraft buildDraft() {
-        HabitDraft draft = new HabitDraft();
-        draft.name = etName.getText() != null ? etName.getText().toString().trim() : "";
-        draft.quitDate = selectedDate;
-        draft.dailyCostStr = etDailyCost.getText() != null ? etDailyCost.getText().toString().trim() : "0";
-        draft.motivationNote = etMotivation.getText() != null ? etMotivation.getText().toString().trim() : "";
-        draft.colorHex = selectedColor;
+    private void onSave() {
+        Habit habit = buildHabitFromForm();
+        ValidationUtils.ValidationResult result = ValidationUtils.validateHabit(habit);
+        if (!result.ok) { showError(result.message); return; }
+
+        if (habitId == -1) {
+            viewModel.insert(habit);
+        } else {
+            habit.setId(habitId);
+            viewModel.update(habit);
+        }
+        finish();
+    }
+
+    /** Reads the form fields into a Habit object. */
+    private Habit buildHabitFromForm() {
+        Habit h = new Habit();
+        h.setName(etName.getText() != null ? etName.getText().toString().trim() : "");
+        h.setQuitDate(selectedDate);
+        h.setMotivationNote(etMotivation.getText() != null ? etMotivation.getText().toString().trim() : "");
+        h.setColorHex(selectedColor);
+        h.setCurrency("₪");
+
+        try {
+            String costStr = etDailyCost.getText() != null ? etDailyCost.getText().toString().trim() : "0";
+            h.setDailyCost(Double.parseDouble(costStr));
+        } catch (NumberFormatException e) {
+            h.setDailyCost(0);
+        }
 
         HabitCategory[] cats = HabitCategory.values();
         int pos = spinnerCategory.getSelectedItemPosition();
-        draft.category = (pos >= 0 && pos < cats.length) ? cats[pos] : HabitCategory.OTHER;
-        return draft;
+        h.setCategory((pos >= 0 && pos < cats.length) ? cats[pos] : HabitCategory.OTHER);
+        return h;
     }
 }

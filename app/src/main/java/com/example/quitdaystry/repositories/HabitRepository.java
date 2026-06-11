@@ -57,10 +57,6 @@ public class HabitRepository {
         return dao.getCleanCount(habitId);
     }
 
-    public LiveData<List<DayLog>> getRecentLogs(long habitId, int limit) {
-        return dao.getRecentLogs(habitId, limit);
-    }
-
     public void insertHabit(Habit h, Consumer<Long> onResult) {
         executor.execute(() -> {
             long id = dao.insertHabit(h);
