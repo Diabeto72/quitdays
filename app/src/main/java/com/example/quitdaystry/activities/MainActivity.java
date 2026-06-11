@@ -12,6 +12,7 @@ import com.example.quitdaystry.R;
 import com.example.quitdaystry.fragments.HabitsFragment;
 import com.example.quitdaystry.fragments.SettingsFragment;
 import com.example.quitdaystry.fragments.StatsFragment;
+import com.example.quitdaystry.repositories.HabitRepository;
 import com.example.quitdaystry.utils.NotificationUtil;
 import com.example.quitdaystry.workers.DailyReminderWorker;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -52,6 +53,13 @@ public class MainActivity extends BaseActivity {
             loadFragment(fragment);
             return true;
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Every day counts as clean automatically — backfill since last open
+        HabitRepository.getInstance(getApplication()).autoMarkCleanDays();
     }
 
     /** Schedules or cancels the daily reminder based on stored preference. */

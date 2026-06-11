@@ -1,18 +1,20 @@
 package com.example.quitdaystry.workers;
 
+import android.app.Application;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
-import com.example.quitdaystry.db.AppDatabase;
-import com.example.quitdaystry.db.dao.AppDao;
+import com.example.quitdaystry.repositories.HabitRepository;
 import com.example.quitdaystry.utils.NotificationUtil;
 
-import java.time.LocalDate;
-import java.util.List;
-
+/**
+ * Runs once a day (WorkManager): auto-logs clean days for all active habits,
+ * then sends an encouraging notification. Days are counted clean automatically —
+ * the user only reports breaks.
+ */
 public class DailyReminderWorker extends Worker {
 
     public DailyReminderWorker(@NonNull Context context, @NonNull WorkerParameters params) {
@@ -22,17 +24,13 @@ public class DailyReminderWorker extends Worker {
     @NonNull
     @Override
     public Result doWork() {
-        AppDao dao = AppDatabase.getInstance(getApplicationContext()).appDao();
+        HabitRepository repo = HabitRepository.getInstance(
+                (Application) getApplicationContext());
 
-        List<Long> activeIds = dao.getActiveHabitIdsSync();
-        if (activeIds == null || activeIds.isEmpty()) return Result.success();
-
-        String today = LocalDate.now().toString();
-        for (long id : activeIds) {
-            if (dao.getLogForDate(id, today) == null) {
-                NotificationUtil.showReminder(getApplicationContext(), "זכור לסמן את יום הגמילה שלך!");
-                break;
-            }
+        int activeHabits = repo.autoMarkCleanDaysSync();
+        if (activeHabits > 0) {
+            NotificationUtil.showReminder(getApplicationContext(),
+                    "יום נקי נוסף לרצף שלך! 💪 המשך כך");
         }
 
         return Result.success();

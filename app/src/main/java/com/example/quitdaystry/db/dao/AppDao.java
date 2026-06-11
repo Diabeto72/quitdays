@@ -51,11 +51,12 @@ public interface AppDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     long insertLog(DayLog log);
 
+    /** Inserts only if no log exists for that habit+date — keeps BREAK logs intact. */
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    long insertLogIfAbsent(DayLog log);
+
     @Delete
     void deleteLog(DayLog log);
-
-    @Query("SELECT * FROM day_logs WHERE habit_id = :habitId AND log_date = :date LIMIT 1")
-    DayLog getLogForDate(long habitId, String date);
 
     @Query("SELECT COUNT(*) FROM day_logs WHERE habit_id = :habitId AND status = 'CLEAN'")
     LiveData<Integer> getCleanCount(long habitId);

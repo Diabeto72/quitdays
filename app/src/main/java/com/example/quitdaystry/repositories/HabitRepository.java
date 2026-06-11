@@ -72,16 +72,42 @@ public class HabitRepository {
         executor.execute(() -> dao.deleteHabit(h));
     }
 
-    public void logCleanDay(long habitId, LocalDate date, Integer craving, String notes) {
-        executor.execute(() -> {
-            DayLog log = new DayLog();
-            log.setHabitId(habitId);
-            log.setLogDate(date);
-            log.setStatus(LogStatus.CLEAN);
-            log.setCravingLevel(craving);
-            log.setNotes(notes);
-            dao.insertLog(log);
-        });
+    /** Async wrapper — call from UI code (e.g. MainActivity.onResume). */
+    public void autoMarkCleanDays() {
+        executor.execute(this::autoMarkCleanDaysSync);
+    }
+
+    /**
+     * Automatically logs every day from the habit's quit date up to today as CLEAN,
+     * unless a log already exists for that date (so BREAK days are never overwritten).
+     * Returns the number of active habits processed.
+     */
+    public int autoMarkCleanDaysSync() {
+        List<Long> ids = dao.getActiveHabitIdsSync();
+        if (ids == null || ids.isEmpty()) return 0;
+
+        LocalDate today = LocalDate.now();
+        for (long id : ids) {
+            Habit h = dao.getHabitByIdSync(id);
+            if (h == null || h.getQuitDate() == null) continue;
+
+            // Start from the day after the newest existing log (no gaps possible below it)
+            LocalDate start = h.getQuitDate();
+            for (DayLog l : dao.getLogsForHabitSync(id)) {
+                if (l.getLogDate() != null && l.getLogDate().plusDays(1).isAfter(start)) {
+                    start = l.getLogDate().plusDays(1);
+                }
+            }
+
+            for (LocalDate d = start; !d.isAfter(today); d = d.plusDays(1)) {
+                DayLog log = new DayLog();
+                log.setHabitId(id);
+                log.setLogDate(d);
+                log.setStatus(LogStatus.CLEAN);
+                dao.insertLogIfAbsent(log);
+            }
+        }
+        return ids.size();
     }
 
     public void logBreak(long habitId, LocalDate date, Integer craving, String trigger, String notes) {

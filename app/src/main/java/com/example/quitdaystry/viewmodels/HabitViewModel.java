@@ -52,11 +52,6 @@ public class HabitViewModel extends AndroidViewModel {
 
     public LiveData<Integer> getCleanCount() { return cleanCount; }
 
-    public void markClean(LocalDate date, Integer craving, String notes) {
-        Long id = habitIdLive.getValue();
-        if (id != null) repo.logCleanDay(id, date, craving, notes);
-    }
-
     public void markBreak(LocalDate date, Integer craving, String trigger, String notes) {
         Long id = habitIdLive.getValue();
         if (id != null) repo.logBreak(id, date, craving, trigger, notes);

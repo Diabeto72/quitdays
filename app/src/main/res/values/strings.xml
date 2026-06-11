@@ -14,7 +14,7 @@
     <string name="empty_habits_subtitle">לחץ על + כדי להוסיף הרגל ראשון</string>
 
     <!-- Habit Detail -->
-    <string name="i_was_clean_today">היום היה נקי ✓</string>
+    <string name="auto_clean_hint">כל יום נספר אוטומטית כיום נקי ✓ — דווח רק אם נשברת</string>
     <string name="i_slipped">נשברתי</string>
     <string name="streak_days_fmt">%d ימים</string>
     <string name="clean_days_fmt">%d ימים נקיים</string>

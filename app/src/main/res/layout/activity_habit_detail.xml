@@ -148,17 +148,14 @@
 
             </LinearLayout>
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_clean"
+            <TextView
                 android:layout_width="match_parent"
-                android:layout_height="56dp"
+                android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
-                android:text="@string/i_was_clean_today"
-                android:backgroundTint="@color/primary"
-                android:textColor="@color/background"
-                android:textSize="15sp"
-                android:textStyle="bold"
-                app:cornerRadius="18dp" />
+                android:gravity="center"
+                android:text="@string/auto_clean_hint"
+                android:textSize="12sp"
+                android:textColor="@color/text_secondary" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_break"

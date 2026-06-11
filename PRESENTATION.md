@@ -59,7 +59,7 @@
 | `SplashActivity.java` | מסך פתיחה 1.5 שניות |
 | `MainActivity.java` | מסך ראשי — BottomNavigation עם 3 פרגמנטים |
 | `AddHabitActivity.java` | מסך אחד לשני מצבים: הוספה (בלי Extra) ועריכה (עם `EXTRA_HABIT_ID` — הטופס מתמלא מראש) |
-| `HabitDetailActivity.java` | פרטי הרגל: רצף, ימים נקיים, כסף שנחסך. כפתורים "היום היה נקי" / "נשברתי" עם דיאלוגים |
+| `HabitDetailActivity.java` | פרטי הרגל: רצף, ימים נקיים, כסף שנחסך. ימים נקיים נספרים אוטומטית — רק כפתור "נשברתי" עם דיאלוג |
 
 ### `fragments/`
 | קובץ | תפקיד |
@@ -79,7 +79,7 @@
 | `DateUtils.java` | חישוב רצף נוכחי, רצף הכי ארוך, כסף שנחסך |
 | `ValidationUtils.java` | בדיקת קלט בטופס (שם 2–50 תווים, תאריך לא עתידי, עלות 0–10,000) |
 | `NotificationUtil.java` | יצירת ערוץ והצגת התראות |
-| `workers/DailyReminderWorker.java` | WorkManager — רץ כל יום בשעה שנבחרה, בודק ב-DB אם סומן היום, ואם לא — שולח תזכורת |
+| `workers/DailyReminderWorker.java` | WorkManager — רץ כל יום בשעה שנבחרה, רושם אוטומטית ימים נקיים ל-DB ושולח התראת עידוד |
 
 ## ספריות (Libraries)
 
@@ -91,13 +91,13 @@
 | **Material Design** | כרטיסים, FAB, TextInputLayout, DatePicker, Slider |
 | **RecyclerView** | רשימת הרגלים יעילה |
 
-## זרימת נתונים לדוגמה — "סימנתי יום נקי"
+## זרימת נתונים לדוגמה — ספירת ימים נקיים אוטומטית
 
-1. משתמש לוחץ "היום היה נקי ✓" ב-`HabitDetailActivity`
-2. נפתח דיאלוג (`dialog_log_clean.xml`) — Slider תשוקה + הערות
-3. שמירה → `viewModel.markClean(...)` → `repository.logCleanDay(...)`
-4. Repository יוצר `DayLog` עם סטטוס CLEAN וכותב ל-DB ב-Thread רקע
-5. Room מעדכן את ה-LiveData → המסך מתעדכן לבד: ימים נקיים +1, כסף נחסך גדל
+1. בכל פתיחת אפליקציה: `MainActivity.onResume()` → `repository.autoMarkCleanDays()`
+2. Repository עובר על כל הרגל פעיל ומשלים `DayLog` עם סטטוס CLEAN לכל יום מאז הפתיחה האחרונה (Thread רקע)
+3. `insertLogIfAbsent` עם `OnConflictStrategy.IGNORE` — יום שכבר רשום כ-BREAK לא נדרס
+4. Room מעדכן את ה-LiveData → המסך מתעדכן לבד: ימים נקיים, רצף, כסף נחסך
+5. אם המשתמש נשבר: לוחץ "נשברתי" → דיאלוג → BREAK נרשם (דורס את ה-CLEAN של היום) והרצף מתאפס
 
 ## שאלות שהמורה עשוי לשאול
 
@@ -105,4 +105,5 @@
 - **למה ExecutorService?** כתיבה ל-DB על ה-UI Thread תוקעת את המסך — Room זורק Exception.
 - **מה זה TypeConverter?** SQLite שומר רק טיפוסים בסיסיים. ממירים `LocalDate` → String.
 - **מה זה Migration?** כשמוסיפים עמודה (best_streak בגרסה 2) בלי למחוק נתוני משתמשים קיימים.
+- **איך ימים נקיים נספרים בלי שהמשתמש מסמן?** השלמה אוטומטית (backfill) בכל פתיחת אפליקציה + Worker יומי. `IGNORE` בקונפליקט שומר על ימי BREAK.
 - **למה LiveData?** המסך נרשם פעם אחת ומקבל עדכונים אוטומטית, בלי דליפות זיכרון (מודע ל-Lifecycle).

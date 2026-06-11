@@ -34,7 +34,7 @@ public class HabitDetailActivity extends BaseActivity {
     private HabitViewModel viewModel;
 
     private TextView tvStreakDays, tvCleanTotal, tvLongestStreak, tvMoneySaved, tvToolbarTitle;
-    private Button btnBreak, btnClean;
+    private Button btnBreak;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +54,6 @@ public class HabitDetailActivity extends BaseActivity {
         tvLongestStreak = findViewById(R.id.tv_longest_streak);
         tvMoneySaved    = findViewById(R.id.tv_money_saved);
         btnBreak        = findViewById(R.id.btn_break);
-        btnClean        = findViewById(R.id.btn_clean);
 
         viewModel = new ViewModelProvider(this).get(HabitViewModel.class);
         viewModel.setHabitId(habitId);
@@ -85,25 +84,6 @@ public class HabitDetailActivity extends BaseActivity {
         });
 
         btnBreak.setOnClickListener(v -> showBreakDialog());
-        btnClean.setOnClickListener(v -> showCleanDialog());
-    }
-
-    /** Dialog for logging a clean day — saves a CLEAN DayLog to the database. */
-    private void showCleanDialog() {
-        View view = LayoutInflater.from(this).inflate(R.layout.dialog_log_clean, null);
-        Slider sliderCraving = view.findViewById(R.id.slider_craving);
-        EditText etNotes     = view.findViewById(R.id.et_notes);
-
-        new AlertDialog.Builder(this)
-                .setTitle(R.string.i_was_clean_today)
-                .setView(view)
-                .setPositiveButton(R.string.save, (d, w) -> {
-                    int craving = (int) sliderCraving.getValue();
-                    String notes = etNotes.getText() != null ? etNotes.getText().toString().trim() : null;
-                    viewModel.markClean(LocalDate.now(), craving, notes);
-                })
-                .setNegativeButton(R.string.cancel, null)
-                .show();
     }
 
     private void showBreakDialog() {
