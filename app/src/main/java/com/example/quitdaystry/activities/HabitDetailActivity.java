@@ -71,6 +71,10 @@ public class HabitDetailActivity extends BaseActivity {
             tvStreakDays.setText(String.valueOf(current));
             int best = Math.max(current, h.getBestStreak());
             tvLongestStreak.setText(getString(R.string.longest_streak_fmt, best));
+
+            // Refresh money here too — cleanCount may have arrived before the habit did
+            Integer count = viewModel.getCleanCount().getValue();
+            if (count != null) tvMoneySaved.setText(DateUtils.savedString(count, h));
         });
 
         viewModel.getCleanCount().observe(this, count -> {

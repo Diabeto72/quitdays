@@ -81,9 +81,10 @@ public class MainActivity extends BaseActivity {
                 .setInitialDelay(delayMs, TimeUnit.MILLISECONDS)
                 .build();
 
+        // Re-enqueue so a changed reminder hour takes effect (KEEP would ignore it)
         wm.enqueueUniquePeriodicWork(
                 WORK_DAILY_REMINDER,
-                ExistingPeriodicWorkPolicy.KEEP,
+                ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE,
                 work);
     }
 

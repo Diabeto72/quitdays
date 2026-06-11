@@ -40,6 +40,7 @@ public class AddHabitActivity extends BaseActivity {
 
     private HabitViewModel viewModel;
     private long habitId = -1;   // -1 = add mode, otherwise edit mode
+    private Habit editingHabit;  // original habit in edit mode, to preserve fields not on the form
 
     private final String[] COLORS = {
         "#4CAF50", "#2196F3", "#F44336", "#FF9800", "#9C27B0", "#00BCD4"
@@ -57,8 +58,14 @@ public class AddHabitActivity extends BaseActivity {
 
         viewModel = new ViewModelProvider(this).get(HabitViewModel.class);
 
+        androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar.setNavigationOnClickListener(v -> finish());
+
         habitId = getIntent().getLongExtra(EXTRA_HABIT_ID, -1);
-        if (habitId != -1) loadHabitForEdit();
+        if (habitId != -1) {
+            toolbar.setTitle(R.string.edit);
+            loadHabitForEdit();
+        }
 
         FloatingActionButton fabSave = findViewById(R.id.fab_save);
         fabSave.setOnClickListener(v -> onSave());
@@ -120,6 +127,7 @@ public class AddHabitActivity extends BaseActivity {
         viewModel.getHabitWithLogs().observe(this, hwl -> {
             if (hwl == null) return;
             Habit h = hwl.habit;
+            editingHabit = h;
             etName.setText(h.getName());
             etDailyCost.setText(String.valueOf(h.getDailyCost()));
             etMotivation.setText(h.getMotivationNote());
@@ -147,6 +155,12 @@ public class AddHabitActivity extends BaseActivity {
             viewModel.insert(habit);
         } else {
             habit.setId(habitId);
+            // Preserve fields the form doesn't edit — otherwise update() resets them
+            if (editingHabit != null) {
+                habit.setBestStreak(editingHabit.getBestStreak());
+                habit.setCreatedAt(editingHabit.getCreatedAt());
+                habit.setArchived(editingHabit.isArchived());
+            }
             viewModel.update(habit);
         }
         finish();
