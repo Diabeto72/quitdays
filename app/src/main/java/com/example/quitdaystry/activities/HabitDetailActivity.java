@@ -132,8 +132,6 @@ public class HabitDetailActivity extends BaseActivity {
             return true;
         } else if (id == R.id.action_delete) {
             showDeleteConfirm(); return true;
-        } else if (id == R.id.action_archive) {
-            archiveHabit(); return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -145,14 +143,5 @@ public class HabitDetailActivity extends BaseActivity {
                 .setPositiveButton(R.string.delete, (d, w) -> { viewModel.delete(); finish(); })
                 .setNegativeButton(R.string.cancel, null)
                 .show();
-    }
-
-    private void archiveHabit() {
-        HabitWithLogs hwl = viewModel.getHabitWithLogs().getValue();
-        if (hwl != null) {
-            hwl.habit.setArchived(true);
-            viewModel.update(hwl.habit);
-            finish();
-        }
     }
 }

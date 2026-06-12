@@ -40,7 +40,6 @@
     <!-- Overflow menu -->
     <string name="edit">ערוך</string>
     <string name="delete">מחק</string>
-    <string name="archive">ארכיון</string>
     <string name="delete_habit">מחק הרגל</string>
     <string name="delete_habit_confirm">האם אתה בטוח שברצונך למחוק את ההרגל הזה לצמיתות?</string>
 
