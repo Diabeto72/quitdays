@@ -16,6 +16,7 @@
     <!-- Habit Detail -->
     <string name="auto_clean_hint">כל יום נספר אוטומטית כיום נקי ✓ — דווח רק אם נשברת</string>
     <string name="i_slipped">נשברתי</string>
+    <string name="i_slipped_confirm">פעולה זו תסיים את ההרגל הזה ותעביר אותו לסטטיסטיקות. לא ניתן לבטל.</string>
     <string name="streak_days_fmt">%d ימים</string>
     <string name="clean_days_fmt">%d ימים נקיים</string>
     <string name="longest_streak_fmt">%d ימים (שיא)</string>
@@ -31,7 +32,6 @@
     <string name="cancel">ביטול</string>
 
     <!-- Dialog -->
-    <string name="craving_level">דרגת תשוקה (0–10)</string>
     <string name="notes_optional">הערות (אופציונלי)</string>
     <string name="notes_required">הערות (חובה)</string>
     <string name="trigger_optional">מה גרם לנפילה? (אופציונלי)</string>
@@ -48,6 +48,13 @@
     <string name="delete_all_data">מחק את כל הנתונים</string>
     <string name="delete_all_confirm">פעולה זו תמחק את כל ההרגלים והלוגים לצמיתות. אין דרך חזרה!</string>
     <string name="export_backup">ייצא גיבוי</string>
+
+    <!-- Stats list -->
+    <string name="stats_history_title">כל ההרגלים</string>
+    <string name="status_active">פעיל</string>
+    <string name="status_ended">הסתיים</string>
+    <string name="date_range_ongoing_fmt">%s – היום</string>
+    <string name="date_range_fmt">%s – %s</string>
 
     <!-- Category display names -->
     <string-array name="habit_categories">

@@ -7,6 +7,7 @@ import androidx.room.PrimaryKey;
 import androidx.room.Relation;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 @Entity(tableName = "habits")
@@ -36,6 +37,9 @@ public class Habit {
     @ColumnInfo(name = "quit_date")
     private LocalDate quitDate;
 
+    @ColumnInfo(name = "quit_time")
+    private LocalTime quitTime;
+
     @ColumnInfo(name = "daily_cost")
     private double dailyCost;
 
@@ -62,6 +66,7 @@ public class Habit {
         this.dailyCost = 0;
         this.isArchived = false;
         this.createdAt = System.currentTimeMillis();
+        this.quitTime = LocalTime.now();
     }
 
     public long getId() { return id; }
@@ -75,6 +80,9 @@ public class Habit {
 
     public LocalDate getQuitDate() { return quitDate; }
     public void setQuitDate(LocalDate quitDate) { this.quitDate = quitDate; }
+
+    public LocalTime getQuitTime() { return quitTime; }
+    public void setQuitTime(LocalTime quitTime) { this.quitTime = quitTime; }
 
     public double getDailyCost() { return dailyCost; }
     public void setDailyCost(double dailyCost) { this.dailyCost = dailyCost; }

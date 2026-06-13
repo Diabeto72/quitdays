@@ -10,12 +10,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.quitdaystry.R;
-import com.example.quitdaystry.models.DayLog;
-import com.example.quitdaystry.models.DayLog.LogStatus;
-import com.example.quitdaystry.models.Habit.HabitWithLogs;
-import com.example.quitdaystry.utils.DateUtils;
+import com.example.quitdaystry.adapters.HabitStatsAdapter;
+import com.example.quitdaystry.models.StatsEntry;
 import com.example.quitdaystry.viewmodels.HabitViewModel;
 
 import java.util.Collections;
@@ -25,6 +25,7 @@ import java.util.Locale;
 public class StatsFragment extends Fragment {
 
     private TextView tvHabits, tvCleanDays, tvMoney, tvBestStreak;
+    private HabitStatsAdapter adapter;
 
     @Nullable
     @Override
@@ -42,32 +43,33 @@ public class StatsFragment extends Fragment {
         tvMoney      = view.findViewById(R.id.tv_stat_money);
         tvBestStreak = view.findViewById(R.id.tv_stat_best_streak);
 
+        RecyclerView rv = view.findViewById(R.id.rv_stats_entries);
+        adapter = new HabitStatsAdapter(Collections.emptyList());
+        rv.setLayoutManager(new LinearLayoutManager(requireContext()));
+        rv.setAdapter(adapter);
+
         HabitViewModel vm = new ViewModelProvider(this).get(HabitViewModel.class);
-        vm.getActiveHabits().observe(getViewLifecycleOwner(), this::updateStats);
+        vm.getStatsEntries().observe(getViewLifecycleOwner(), this::updateStats);
     }
 
-    private void updateStats(List<HabitWithLogs> habits) {
-        if (habits == null) habits = Collections.emptyList();
+    private void updateStats(List<StatsEntry> entries) {
+        if (entries == null) entries = Collections.emptyList();
 
-        int habitCount = habits.size();
+        adapter.setEntries(entries);
+
+        int activeCount = 0;
         int totalClean = 0;
         double totalMoney = 0;
         int bestStreak = 0;
 
-        for (HabitWithLogs hwl : habits) {
-            List<DayLog> logs = hwl.logs != null ? hwl.logs : Collections.emptyList();
-
-            long cleanCount = logs.stream().filter(l -> l.getStatus() == LogStatus.CLEAN).count();
-            totalClean += (int) cleanCount;
-            totalMoney += cleanCount * hwl.habit.getDailyCost();
-
-            int streak = Math.max(
-                    DateUtils.currentStreak(hwl.habit, logs),
-                    hwl.habit.getBestStreak());
-            if (streak > bestStreak) bestStreak = streak;
+        for (StatsEntry entry : entries) {
+            if (entry.active) activeCount++;
+            totalClean += entry.cleanDays;
+            totalMoney += entry.moneySaved();
+            if (entry.streak > bestStreak) bestStreak = entry.streak;
         }
 
-        tvHabits.setText(String.valueOf(habitCount));
+        tvHabits.setText(String.valueOf(activeCount));
         tvCleanDays.setText(String.valueOf(totalClean));
         tvMoney.setText(String.format(Locale.US, "₪ %.2f", totalMoney));
         tvBestStreak.setText(getString(R.string.streak_days_fmt, bestStreak));

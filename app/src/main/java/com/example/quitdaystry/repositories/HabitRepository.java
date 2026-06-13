@@ -12,6 +12,8 @@ import com.example.quitdaystry.models.DayLog;
 import com.example.quitdaystry.models.DayLog.LogStatus;
 import com.example.quitdaystry.models.Habit;
 import com.example.quitdaystry.models.Habit.HabitWithLogs;
+import com.example.quitdaystry.models.HabitHistory;
+import com.example.quitdaystry.utils.DateUtils;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -91,8 +93,9 @@ public class HabitRepository {
             Habit h = dao.getHabitByIdSync(id);
             if (h == null || h.getQuitDate() == null) continue;
 
-            // Start from the day after the newest existing log (no gaps possible below it)
-            LocalDate start = h.getQuitDate();
+            // Quit date itself is day 0 — savings start accruing from day 1.
+            // Start from the day after the newest existing log (no gaps possible below it).
+            LocalDate start = h.getQuitDate().plusDays(1);
             for (DayLog l : dao.getLogsForHabitSync(id)) {
                 if (l.getLogDate() != null && l.getLogDate().plusDays(1).isAfter(start)) {
                     start = l.getLogDate().plusDays(1);
@@ -110,28 +113,37 @@ public class HabitRepository {
         return ids.size();
     }
 
-    public void logBreak(long habitId, LocalDate date, Integer craving, String trigger, String notes) {
-        executor.execute(() -> {
-            DayLog log = new DayLog();
-            log.setHabitId(habitId);
-            log.setLogDate(date);
-            log.setStatus(LogStatus.BREAK);
-            log.setCravingLevel(craving);
-            log.setTriggerNote(trigger);
-            log.setNotes(notes);
-            dao.insertLog(log);
+    public LiveData<List<HabitHistory>> getAllHabitHistory() {
+        return dao.getAllHabitHistory();
+    }
 
+    /**
+     * Ends a habit attempt: snapshots its final stats into history (so the stats
+     * screen keeps showing it), then deletes the habit and its logs.
+     */
+    public void finalizeHabit(long habitId, LocalDate endDate, String failureNote) {
+        executor.execute(() -> {
             Habit habit = dao.getHabitByIdSync(habitId);
-            if (habit != null) {
-                // Capture current streak as best_streak before resetting quitDate
-                java.util.List<DayLog> existingLogs = dao.getLogsForHabitSync(habitId);
-                int streakNow = com.example.quitdaystry.utils.DateUtils.currentStreak(habit, existingLogs);
-                if (streakNow > habit.getBestStreak()) {
-                    habit.setBestStreak(streakNow);
-                }
-                habit.setQuitDate(date.plusDays(1));
-                dao.updateHabit(habit);
-            }
+            if (habit == null) return;
+
+            List<DayLog> logs = dao.getLogsForHabitSync(habitId);
+            int streakNow = DateUtils.currentStreak(habit, logs);
+            int bestStreak = Math.max(streakNow, habit.getBestStreak());
+
+            HabitHistory history = new HabitHistory();
+            history.setName(habit.getName());
+            history.setCategory(habit.getCategory());
+            history.setColorHex(habit.getColorHex());
+            history.setCurrency(habit.getCurrency());
+            history.setDailyCost(habit.getDailyCost());
+            history.setStartDate(habit.getQuitDate());
+            history.setEndDate(endDate);
+            history.setCleanDays(dao.getCleanCountSync(habitId));
+            history.setBestStreak(bestStreak);
+            history.setFailureNote(failureNote);
+            dao.insertHabitHistory(history);
+
+            dao.deleteHabit(habit);
         });
     }
 }

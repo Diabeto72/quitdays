@@ -72,6 +72,16 @@
                         android:textColor="@color/white"
                         android:alpha="0.85" />
 
+                    <TextView
+                        android:id="@+id/tv_streak_time"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="00:00:00"
+                        android:textSize="12sp"
+                        android:textColor="@color/white"
+                        android:alpha="0.7"
+                        android:layout_marginTop="2dp" />
+
                 </LinearLayout>
             </FrameLayout>
 

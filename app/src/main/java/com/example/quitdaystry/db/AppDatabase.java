@@ -15,10 +15,12 @@ import com.example.quitdaystry.models.DayLog;
 import com.example.quitdaystry.models.DayLog.LogStatus;
 import com.example.quitdaystry.models.Habit;
 import com.example.quitdaystry.models.Habit.HabitCategory;
+import com.example.quitdaystry.models.HabitHistory;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 
-@Database(entities = {Habit.class, DayLog.class}, version = 2, exportSchema = false)
+@Database(entities = {Habit.class, DayLog.class, HabitHistory.class}, version = 4, exportSchema = false)
 @TypeConverters(AppDatabase.Converters.class)
 public abstract class AppDatabase extends RoomDatabase {
 
@@ -33,6 +35,32 @@ public abstract class AppDatabase extends RoomDatabase {
         }
     };
 
+    static final Migration MIGRATION_2_3 = new Migration(2, 3) {
+        @Override
+        public void migrate(SupportSQLiteDatabase db) {
+            db.execSQL("ALTER TABLE habits ADD COLUMN quit_time TEXT");
+        }
+    };
+
+    static final Migration MIGRATION_3_4 = new Migration(3, 4) {
+        @Override
+        public void migrate(SupportSQLiteDatabase db) {
+            db.execSQL("CREATE TABLE IF NOT EXISTS habit_history (" +
+                    "id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, " +
+                    "name TEXT, " +
+                    "category TEXT, " +
+                    "color_hex TEXT, " +
+                    "currency TEXT, " +
+                    "daily_cost REAL NOT NULL, " +
+                    "start_date TEXT, " +
+                    "end_date TEXT, " +
+                    "clean_days INTEGER NOT NULL, " +
+                    "best_streak INTEGER NOT NULL, " +
+                    "failure_note TEXT, " +
+                    "ended_at INTEGER NOT NULL)");
+        }
+    };
+
     public static AppDatabase getInstance(Context context) {
         if (instance == null) {
             synchronized (AppDatabase.class) {
@@ -41,7 +69,7 @@ public abstract class AppDatabase extends RoomDatabase {
                             context.getApplicationContext(),
                             AppDatabase.class,
                             "quitdays.db"
-                    ).addMigrations(MIGRATION_1_2).build();
+                    ).addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4).build();
                 }
             }
         }
@@ -59,6 +87,16 @@ public abstract class AppDatabase extends RoomDatabase {
         @TypeConverter
         public static LocalDate toLocalDate(String value) {
             return value == null ? null : LocalDate.parse(value);
+        }
+
+        @TypeConverter
+        public static String fromLocalTime(LocalTime time) {
+            return time == null ? null : time.toString();
+        }
+
+        @TypeConverter
+        public static LocalTime toLocalTime(String value) {
+            return value == null ? null : LocalTime.parse(value);
         }
 
         @TypeConverter

@@ -61,6 +61,13 @@
                 android:layout_marginBottom="12dp"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
 
+            <Button
+                android:id="@+id/btn_pick_time"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/til_daily_cost"
                 android:layout_width="match_parent"

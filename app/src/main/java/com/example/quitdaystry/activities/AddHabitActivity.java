@@ -1,5 +1,6 @@
 package com.example.quitdaystry.activities;
 
+import android.app.TimePickerDialog;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
@@ -21,7 +22,9 @@ import com.google.android.material.textfield.TextInputEditText;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 
 /**
  * One screen for both adding and editing a habit.
@@ -32,10 +35,13 @@ public class AddHabitActivity extends BaseActivity {
 
     public static final String EXTRA_HABIT_ID = "extra_habit_id";
 
+    private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
+
     private TextInputEditText etName, etDailyCost, etMotivation;
     private Spinner spinnerCategory;
-    private Button btnPickDate;
+    private Button btnPickDate, btnPickTime;
     private LocalDate selectedDate = LocalDate.now();
+    private LocalTime selectedTime = LocalTime.now();
     private String selectedColor = "#4CAF50";
 
     private HabitViewModel viewModel;
@@ -54,6 +60,7 @@ public class AddHabitActivity extends BaseActivity {
         bindViews();
         setupCategorySpinner();
         setupDatePicker();
+        setupTimePicker();
         setupColorPicker();
 
         viewModel = new ViewModelProvider(this).get(HabitViewModel.class);
@@ -77,6 +84,7 @@ public class AddHabitActivity extends BaseActivity {
         etMotivation = findViewById(R.id.et_motivation);
         spinnerCategory = findViewById(R.id.spinner_category);
         btnPickDate = findViewById(R.id.btn_pick_date);
+        btnPickTime = findViewById(R.id.btn_pick_time);
     }
 
     private void setupCategorySpinner() {
@@ -104,6 +112,14 @@ public class AddHabitActivity extends BaseActivity {
             });
             picker.show(getSupportFragmentManager(), "date_picker");
         });
+    }
+
+    private void setupTimePicker() {
+        btnPickTime.setText(selectedTime.format(TIME_FORMATTER));
+        btnPickTime.setOnClickListener(v -> new TimePickerDialog(this, (tp, h, m) -> {
+            selectedTime = LocalTime.of(h, m);
+            btnPickTime.setText(selectedTime.format(TIME_FORMATTER));
+        }, selectedTime.getHour(), selectedTime.getMinute(), true).show());
     }
 
     private void setupColorPicker() {
@@ -134,6 +150,10 @@ public class AddHabitActivity extends BaseActivity {
             if (h.getQuitDate() != null) {
                 selectedDate = h.getQuitDate();
                 btnPickDate.setText(selectedDate.toString());
+            }
+            if (h.getQuitTime() != null) {
+                selectedTime = h.getQuitTime();
+                btnPickTime.setText(selectedTime.format(TIME_FORMATTER));
             }
             if (h.getCategory() != null) {
                 HabitCategory[] cats = HabitCategory.values();
@@ -171,6 +191,7 @@ public class AddHabitActivity extends BaseActivity {
         Habit h = new Habit();
         h.setName(etName.getText() != null ? etName.getText().toString().trim() : "");
         h.setQuitDate(selectedDate);
+        h.setQuitTime(selectedTime);
         h.setMotivationNote(etMotivation.getText() != null ? etMotivation.getText().toString().trim() : "");
         h.setColorHex(selectedColor);
         h.setCurrency("₪");

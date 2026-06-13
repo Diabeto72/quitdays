@@ -4,7 +4,10 @@ import com.example.quitdaystry.models.DayLog;
 import com.example.quitdaystry.models.DayLog.LogStatus;
 import com.example.quitdaystry.models.Habit;
 
+import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.time.temporal.ChronoUnit;
@@ -43,6 +46,24 @@ public class DateUtils {
 
         if (effectiveStart.isAfter(today)) return 0;
         return (int) ChronoUnit.DAYS.between(effectiveStart, today);
+    }
+
+    /** Wall-clock time elapsed since the effective quit moment. */
+    public static Duration timeSinceQuit(Habit h, List<DayLog> logs) {
+        LocalDate quitDate = h.getQuitDate();
+
+        LocalDate lastBreak = logs.stream()
+                .filter(l -> l.getStatus() == LogStatus.BREAK)
+                .map(DayLog::getLogDate)
+                .max(Comparator.naturalOrder())
+                .orElse(null);
+
+        LocalDateTime start = (lastBreak != null && lastBreak.isAfter(quitDate))
+                ? LocalDateTime.of(lastBreak.plusDays(1), LocalTime.MIDNIGHT)
+                : LocalDateTime.of(quitDate, h.getQuitTime() != null ? h.getQuitTime() : LocalTime.MIDNIGHT);
+
+        LocalDateTime now = LocalDateTime.now();
+        return start.isAfter(now) ? Duration.ZERO : Duration.between(start, now);
     }
 
     /** Longest consecutive CLEAN-day span across all logs. */

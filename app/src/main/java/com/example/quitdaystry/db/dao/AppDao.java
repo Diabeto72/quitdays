@@ -12,6 +12,7 @@ import androidx.room.Update;
 import com.example.quitdaystry.models.DayLog;
 import com.example.quitdaystry.models.Habit;
 import com.example.quitdaystry.models.Habit.HabitWithLogs;
+import com.example.quitdaystry.models.HabitHistory;
 
 import java.util.List;
 
@@ -61,6 +62,17 @@ public interface AppDao {
     @Query("SELECT COUNT(*) FROM day_logs WHERE habit_id = :habitId AND status = 'CLEAN'")
     LiveData<Integer> getCleanCount(long habitId);
 
+    @Query("SELECT COUNT(*) FROM day_logs WHERE habit_id = :habitId AND status = 'CLEAN'")
+    int getCleanCountSync(long habitId);
+
     @Query("SELECT * FROM day_logs WHERE habit_id = :habitId")
     List<DayLog> getLogsForHabitSync(long habitId);
+
+    // --- Habit history (ended attempts) ---
+
+    @Insert
+    long insertHabitHistory(HabitHistory history);
+
+    @Query("SELECT * FROM habit_history ORDER BY ended_at DESC")
+    LiveData<List<HabitHistory>> getAllHabitHistory();
 }

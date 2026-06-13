@@ -2,6 +2,8 @@ package com.example.quitdaystry.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -21,8 +23,8 @@ import com.example.quitdaystry.models.Habit;
 import com.example.quitdaystry.models.Habit.HabitWithLogs;
 import com.example.quitdaystry.utils.DateUtils;
 import com.example.quitdaystry.viewmodels.HabitViewModel;
-import com.google.android.material.slider.Slider;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,8 +35,23 @@ public class HabitDetailActivity extends BaseActivity {
 
     private HabitViewModel viewModel;
 
-    private TextView tvStreakDays, tvCleanTotal, tvLongestStreak, tvMoneySaved, tvToolbarTitle;
+    private TextView tvStreakDays, tvStreakTime, tvCleanTotal, tvLongestStreak, tvMoneySaved, tvToolbarTitle;
     private Button btnBreak;
+
+    private final Handler tickHandler = new Handler(Looper.getMainLooper());
+    private final Runnable tickRunnable = new Runnable() {
+        @Override
+        public void run() {
+            HabitWithLogs hwl = viewModel.getHabitWithLogs().getValue();
+            if (hwl != null) {
+                List<DayLog> logs = hwl.logs != null ? hwl.logs : new ArrayList<>();
+                Duration d = DateUtils.timeSinceQuit(hwl.habit, logs);
+                tvStreakTime.setText(String.format("%02d:%02d:%02d",
+                        d.toHoursPart(), d.toMinutesPart(), d.toSecondsPart()));
+            }
+            tickHandler.postDelayed(this, 1000);
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +67,7 @@ public class HabitDetailActivity extends BaseActivity {
 
         tvToolbarTitle  = findViewById(R.id.tv_toolbar_title);
         tvStreakDays    = findViewById(R.id.tv_streak_days);
+        tvStreakTime    = findViewById(R.id.tv_streak_time);
         tvCleanTotal    = findViewById(R.id.tv_clean_total);
         tvLongestStreak = findViewById(R.id.tv_longest_streak);
         tvMoneySaved    = findViewById(R.id.tv_money_saved);
@@ -86,11 +104,22 @@ public class HabitDetailActivity extends BaseActivity {
         btnBreak.setOnClickListener(v -> showBreakDialog());
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        tickHandler.post(tickRunnable);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        tickHandler.removeCallbacks(tickRunnable);
+    }
+
     private void showBreakDialog() {
         View view = LayoutInflater.from(this).inflate(R.layout.dialog_log_break, null);
-        Slider sliderCraving = view.findViewById(R.id.slider_craving);
-        EditText etTrigger   = view.findViewById(R.id.et_trigger);
-        EditText etNotes     = view.findViewById(R.id.et_notes);
+        EditText etTrigger = view.findViewById(R.id.et_trigger);
+        EditText etNotes   = view.findViewById(R.id.et_notes);
 
         AlertDialog dialog = new AlertDialog.Builder(this)
                 .setTitle(R.string.i_slipped)
@@ -105,10 +134,11 @@ public class HabitDetailActivity extends BaseActivity {
                 Toast.makeText(this, R.string.error_break_note_required, Toast.LENGTH_SHORT).show();
                 return;
             }
-            int craving = (int) sliderCraving.getValue();
-            String trigger = etTrigger.getText() != null ? etTrigger.getText().toString().trim() : null;
-            viewModel.markBreak(LocalDate.now(), craving, trigger, notes);
+            String trigger = etTrigger.getText() != null ? etTrigger.getText().toString().trim() : "";
+            String failureNote = trigger.isEmpty() ? notes : trigger + " — " + notes;
+            viewModel.finalizeHabit(LocalDate.now(), failureNote);
             dialog.dismiss();
+            finish();
         }));
 
         dialog.show();
