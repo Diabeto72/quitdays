@@ -1,7 +1,6 @@
 package com.example.quitdaystry.activities;
 
 import android.os.Bundle;
-import androidx.preference.PreferenceManager;
 
 import androidx.fragment.app.Fragment;
 import androidx.work.ExistingPeriodicWorkPolicy;
@@ -12,6 +11,7 @@ import com.example.quitdaystry.R;
 import com.example.quitdaystry.fragments.HabitsFragment;
 import com.example.quitdaystry.fragments.SettingsFragment;
 import com.example.quitdaystry.fragments.StatsFragment;
+import com.example.quitdaystry.fragments.testFragment;
 import com.example.quitdaystry.repositories.HabitRepository;
 import com.example.quitdaystry.utils.NotificationUtil;
 import com.example.quitdaystry.workers.DailyReminderWorker;
@@ -23,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 public class MainActivity extends BaseActivity {
 
     public static final String WORK_DAILY_REMINDER = "daily_reminder";
+    public static final String PREFS_NAME = "quit_days_prefs";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +48,10 @@ public class MainActivity extends BaseActivity {
                 fragment = new StatsFragment();
             } else if (id == R.id.nav_settings) {
                 fragment = new SettingsFragment();
+            /*} else if (id == R.id.test_settings) {
+                fragment = new testFragment();
+                */
+
             } else {
                 return false;
             }
@@ -64,15 +69,14 @@ public class MainActivity extends BaseActivity {
 
     /** Schedules or cancels the daily reminder based on stored preference. */
     public static void rescheduleReminderIfEnabled(android.content.Context context) {
-        boolean enabled = PreferenceManager.getDefaultSharedPreferences(context)
-                .getBoolean("reminder_enabled", false);
+        android.content.SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, android.content.Context.MODE_PRIVATE);
+        boolean enabled = prefs.getBoolean("reminder_enabled", false);
         WorkManager wm = WorkManager.getInstance(context);
         if (!enabled) {
             wm.cancelUniqueWork(WORK_DAILY_REMINDER);
             return;
         }
-        int hour = PreferenceManager.getDefaultSharedPreferences(context)
-                .getInt("reminder_hour", 21);
+        int hour = prefs.getInt("reminder_hour", 21);
 
         Calendar target = Calendar.getInstance();
         target.set(Calendar.HOUR_OF_DAY, hour);

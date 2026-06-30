@@ -7,10 +7,7 @@ import android.os.Looper;
 
 import com.example.quitdaystry.R;
 
-/**
- * Splash screen shown on launch for 1.5 seconds before transitioning to MainActivity.
- * Declared with {@code android:noHistory="true"} in the manifest.
- */
+
 public class SplashActivity extends BaseActivity {
 
     private static final long SPLASH_DELAY_MS = 1500;
