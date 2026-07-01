@@ -40,7 +40,9 @@ public class AddHabitActivity extends BaseActivity {
     private TextInputEditText etName, etDailyCost, etMotivation;
     private Spinner spinnerCategory;
     private Button btnPickDate, btnPickTime;
+    // Holds the selected quit date (default is today)
     private LocalDate selectedDate = LocalDate.now();
+    // Holds the selected quit time (default is now)
     private LocalTime selectedTime = LocalTime.now();
     private String selectedColor = "#4CAF50";
 
@@ -96,8 +98,10 @@ public class AddHabitActivity extends BaseActivity {
     }
 
     private void setupDatePicker() {
+        // Display initial or existing date on the button
         btnPickDate.setText(selectedDate.toString());
         btnPickDate.setOnClickListener(v -> {
+            // Only allow picking dates in the past (up to today)
             CalendarConstraints constraints = new CalendarConstraints.Builder()
                     .setValidator(DateValidatorPointBackward.now())
                     .build();
@@ -106,6 +110,7 @@ public class AddHabitActivity extends BaseActivity {
                     .setCalendarConstraints(constraints)
                     .build();
             picker.addOnPositiveButtonClickListener(ms -> {
+                // Convert milliseconds to LocalDate and update UI
                 selectedDate = Instant.ofEpochMilli(ms)
                         .atZone(ZoneId.systemDefault()).toLocalDate();
                 btnPickDate.setText(selectedDate.toString());
@@ -115,8 +120,10 @@ public class AddHabitActivity extends BaseActivity {
     }
 
     private void setupTimePicker() {
+        // Display initial or existing time on the button
         btnPickTime.setText(selectedTime.format(TIME_FORMATTER));
         btnPickTime.setOnClickListener(v -> new TimePickerDialog(this, (tp, h, m) -> {
+            // Update selected time and button text when time is chosen
             selectedTime = LocalTime.of(h, m);
             btnPickTime.setText(selectedTime.format(TIME_FORMATTER));
         }, selectedTime.getHour(), selectedTime.getMinute(), true).show());

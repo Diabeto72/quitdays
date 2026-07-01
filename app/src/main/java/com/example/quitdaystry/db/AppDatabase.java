@@ -22,7 +22,7 @@ import java.time.LocalTime;
 
 @Database(entities = {Habit.class, DayLog.class, HabitHistory.class}, version = 4, exportSchema = false)
 @TypeConverters(AppDatabase.Converters.class)
-public abstract class AppDatabase extends RoomDatabase {
+public abstract class   AppDatabase extends RoomDatabase {
 
     private static volatile AppDatabase instance;
 

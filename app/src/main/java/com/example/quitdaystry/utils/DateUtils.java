@@ -34,17 +34,21 @@ public class DateUtils {
         LocalDate today = LocalDate.now();
         LocalDate quitDate = h.getQuitDate();
 
+        // Find the most recent date where the user "broke" the habit
         LocalDate lastBreak = logs.stream()
                 .filter(l -> l.getStatus() == LogStatus.BREAK)
                 .map(DayLog::getLogDate)
                 .max(Comparator.naturalOrder())
                 .orElse(null);
 
+        // If there was a break after the initial quit date, the streak restarts the next day
         LocalDate effectiveStart = (lastBreak != null && lastBreak.isAfter(quitDate))
                 ? lastBreak.plusDays(1)
                 : quitDate;
 
+        // If the calculated start is in the future, streak is 0
         if (effectiveStart.isAfter(today)) return 0;
+        // Calculate full days between the effective start and today
         return (int) ChronoUnit.DAYS.between(effectiveStart, today);
     }
 
@@ -52,17 +56,20 @@ public class DateUtils {
     public static Duration timeSinceQuit(Habit h, List<DayLog> logs) {
         LocalDate quitDate = h.getQuitDate();
 
+        // Identify the latest relapse to determine the new start point
         LocalDate lastBreak = logs.stream()
                 .filter(l -> l.getStatus() == LogStatus.BREAK)
                 .map(DayLog::getLogDate)
                 .max(Comparator.naturalOrder())
                 .orElse(null);
 
+        // Combine date and time to get a specific point in time
         LocalDateTime start = (lastBreak != null && lastBreak.isAfter(quitDate))
                 ? LocalDateTime.of(lastBreak.plusDays(1), LocalTime.MIDNIGHT)
                 : LocalDateTime.of(quitDate, h.getQuitTime() != null ? h.getQuitTime() : LocalTime.MIDNIGHT);
 
         LocalDateTime now = LocalDateTime.now();
+        // Return difference between now and the calculated start time
         return start.isAfter(now) ? Duration.ZERO : Duration.between(start, now);
     }
 

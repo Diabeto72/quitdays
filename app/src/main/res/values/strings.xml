@@ -46,7 +46,7 @@
     <!-- Settings -->
     <string name="settings_reminder">תזכורת יומית</string>
     <string name="delete_all_data">מחק את כל הנתונים</string>
-    <string name="delete_all_confirm">פעולה זו תמחק את כל ההרגלים והלוגים לצמיתות. אין דרך חזרה!</string>
+    <string name="delete_all_confirm">פעולה זו תמחק את כל ההרגלים והלוגים לצמיתות.</string>
     <string name="export_backup">ייצא גיבוי</string>
 
     <!-- Stats list -->
